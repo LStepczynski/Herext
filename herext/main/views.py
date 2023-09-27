@@ -1,7 +1,59 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from .forms import AccountForm
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 
-def home(response):
-    return render(response, 'main/index.html', {})
+@login_required
+def home_page(request):
+    return render(request, 'main/index.html', {})
+
+def login_page(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(username, password)
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            # Redirect to a success page or home page, for example:
+            print(user)
+            return redirect('home')
+        else:
+            # Return an 'invalid login' error message.
+            print('a')
+            return render(request, 'main/login.html', {'error': 'Invalid login credentials'})
+    else:
+        return render(request, 'main/login.html')
+
+
+def register_page(request):
+    if request.method == "POST":
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            if not User.objects.filter(username=username).exists():
+                user = User.objects.create_user(form.cleaned_data.get('username'),
+                                                form.cleaned_data.get('email'),
+                                                form.cleaned_data.get('password'))
+                user.first_name = form.cleaned_data.get('first_name')
+                user.last_name = form.cleaned_data.get('last_name')
+                user.save()
+                return redirect('login')
+            else:
+                form.add_error('username', 'A user with this username already exists')
+        return render(request, 'main/register.html', {'form': form})
+    else:
+        form = AccountForm()
+    return render(request, 'main/register.html', {'form': form})
+
+@login_required
+def logout_page(request):
+    print('stest')
+    logout(request)
+    return redirect('login')

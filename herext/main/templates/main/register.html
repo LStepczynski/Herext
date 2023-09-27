@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Register {% endblock %}
+
+
+{% block head %}
+
+{% endblock %}
+
+
+{% block body %}
+    <h1></h1>
+    <form action="#" method="POST">
+        {% csrf_token %}
+        <p>Username:</p>
+        <input name="username" type="text"> <br>
+
+        <p>First Name:</p> 
+        <input name="first_name" type="text"><br>
+
+        <p>Last Name:</p> 
+        <input name="last_name" type="text"><br>
+
+        <p>Email Name:</p> 
+        <input name="email" type="text"><br>
+
+        <p>Password:</p> 
+        <input name="password" type="password"><br>
+
+        <button type="submit">Sign in</button>
+    </form>
+{% endblock %}
