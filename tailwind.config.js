@@ -1,7 +1,11 @@
 module.exports = {
   content: ["./herext/**/*.{html,js}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        lilita: ['Lilita One']
+      }
+    },
   },
   plugins: [],
 }

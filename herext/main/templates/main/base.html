@@ -5,10 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/output.css' %}">
-    {% block title %}{% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
 <body>
+    <nav style="box-shadow: 0 25px 50px -12px rgb(92, 92, 92);" class="h-[60px] w-full shadow-2xl md:h-[80px]">
+        <ul class="flex justify-end mr-[20px] md:mr-[60px] md:space-x-4 | text-white | font-lilita">
+            <li class='grid items-center h-[60px] md:h-[80px]'><a style="transition: all 0.3s;" id="about" class='text-2xl md:text-[28px] xs:mx-[20px]' href='/'>About</a></li>
+    
+            <li class='grid items-center h-[60px] md:h-[80px]'><a style="transition: all 0.3s;" id="projects" class='font-oswald text-2xl md:text-[28px]' href='/chatrooms'>Chat Rooms</a></li>
+    
+            <li class='grid items-center h-[60px] md:h-[80px]'><a style="transition: all 0.3s;" id="resume" class='text-xl bg-red-600 border-red-600 rounded-[6px] shadow-red py-[5px] px-[15px] md:py-[10px]' href="/login">Login</a></li>
+        </ul>
+    </nav>
+    <br>
     {% block body %}{% endblock %}
 </body>
 </html>

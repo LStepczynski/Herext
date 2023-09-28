@@ -10,15 +10,20 @@
 
 
 {% block body %}
-    <h1></h1>
-    <form action="#" method="POST">
-        {% csrf_token %}
-        <p>Username:</p>
-        <input name="username" type="text"> <br> 
+    <div class="w-[100%] grid justify-center mt-[50px] sm:mt-[100px]">
+        <div class="bg-white | grid items-center | justify-items-center | w-max | rounded-[25px] | px-[40px] sm:px-[50px] lg:px-[70px]">
+            <h1 class="font-lilita | text-[40px] sm:text-[50px] lg:text-[60px] | mt-[20px] sm:mt-[30px] lg:mt-[40px]">Login</h1>
+            <form action="#" method="POST">
+                {% csrf_token %}
+                <p class="font-lilita | text-[20px] sm:text-[25px] lg:text-[30px] | mt-[10px] sm:mt-[20px]">Username:</p>
+                <input class="border-[2px] | border-gray-600 | rounded-[10px] | text-[16px] sm:text-[20px] lg:text-[25px]" name="username" type="text"> <br> 
 
-        <p>Password:</p> 
-        <input name="password" type="password"><br>
+                <p class="font-lilita | text-[20px] sm:text-[25px] lg:text-[30px] | mt-[20px] sm:mt-[30px]">Password:</p> 
+                <input class="border-[2px] | border-gray-600 | rounded-[10px] | text-[16px] sm:text-[20px] lg:text-[25px]" name="password" type="password"><br>
+                <a class="underline" href="/register">Don't have an account?</a>
 
-        <button type="submit">Log in</button>
-    </form>
+                <button class="w-[100%] | bg-red-700 | rounded-md | font-lilita | text-[20px] sm:text-[25px] lg:text-[30px] | my-[30px]" type="submit">Log in</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
