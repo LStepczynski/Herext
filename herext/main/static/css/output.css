@@ -690,11 +690,6 @@ video {
   line-height: 1.75rem;
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
@@ -726,6 +721,10 @@ body {
   margin: 0;
   padding: 0;
   background: #212121;
+}
+
+.shadowHover:hover {
+  text-shadow: 5px 5px 15px #FFFFFF;
 }
 
 @media (prefers-color-scheme: dark) {

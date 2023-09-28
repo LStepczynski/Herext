@@ -7,9 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 
-@login_required
 def home_page(request):
-    return render(request, 'main/index.html', {})
+    return render(request, 'main/index.html', {'logged':request.user.is_authenticated})
 
 def login_page(request):
     if request.method == 'POST':
@@ -27,9 +26,9 @@ def login_page(request):
         else:
             # Return an 'invalid login' error message.
             print('a')
-            return render(request, 'main/login.html', {'error': 'Invalid login credentials'})
+            return render(request, 'main/login.html', {'error': 'Invalid login credentials', 'logged':request.user.is_authenticated})
     else:
-        return render(request, 'main/login.html')
+        return render(request, 'main/login.html', {'logged':request.user.is_authenticated})
 
 
 def register_page(request):
@@ -47,13 +46,18 @@ def register_page(request):
                 return redirect('login')
             else:
                 form.add_error('username', 'A user with this username already exists')
-        return render(request, 'main/register.html', {'form': form})
+        return render(request, 'main/register.html', {'form': form, 'logged':request.user.is_authenticated})
     else:
         form = AccountForm()
-    return render(request, 'main/register.html', {'form': form})
+    return render(request, 'main/register.html', {'form': form, 'logged':request.user.is_authenticated})
+
+
+@login_required
+def chatrooms_page(request):
+    return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated})
+
 
 @login_required
 def logout_page(request):
-    print('stest')
     logout(request)
     return redirect('login')
