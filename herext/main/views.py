@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from .models import *
 from django.shortcuts import redirect
 from .forms import AccountForm
 from django.contrib.auth import authenticate, login, logout
@@ -54,7 +55,11 @@ def register_page(request):
 
 @login_required
 def chatrooms_page(request):
-    return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated})
+    user_chatrooms = ChatRoom.objects.all()
+    user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
+    chatroom_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
+    return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
+                                                   'chatrooms':zip([(index % 3) + 1 for index in range(len(user_chatrooms))], user_chatrooms, chatroom_lengths),})
 
 
 @login_required
