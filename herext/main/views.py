@@ -3,8 +3,10 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import *
 from django.shortcuts import redirect
-from .forms import AccountForm
+from .forms import *
 from django.contrib.auth import authenticate, login, logout
+import json
+from datetime import date
 
 # Create your views here.
 
@@ -58,7 +60,6 @@ def chatrooms_page(request):
     user_chatrooms = ChatRoom.objects.all()
     user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
     user_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
-    print(user_chatrooms_id)
     chatroom_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
     return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
                                                    'chatrooms':zip(user_chatrooms_id, user_chatrooms, chatroom_lengths),})
@@ -72,6 +73,25 @@ def chatroom_page(request, id):
         return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated})
     else:
         return redirect('chatrooms')
+    
+
+@login_required
+def create_chatroom_page(request):
+    form = ChatroomForm(request.POST)
+    if request.method == 'POST':
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            usernames = {}
+            for key, value in request.POST.items():
+                if key.startswith('username') and value != '':
+                    usernames[key] = value
+            chatroom = ChatRoom.objects.create(name=name, members=usernames, owner=request.user.username, creation_date=date.today())
+            chatroom.save()
+            return redirect('chatrooms')
+        return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
+    else:
+        return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
+
 
 
 @login_required
