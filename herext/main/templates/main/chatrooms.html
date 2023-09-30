@@ -11,13 +11,13 @@
 
 {% block body %}
 <div class="grid | justify-center">
-    <div class="w-[60vw] | grid | col-span-3 | gap-y-[50px]">
-        {% for index, chatroom, chatroom_length in chatrooms %}
-            <div style="grid-column: {{index}};" class="bg-white | grid items-center | justify-items-center | rounded-[25px] | px-[40px] sm:px-[50px] lg:px-[70px] | w-[400px]">
+    <div class="w-[90vw] sm:w-[80vw] lg:w-[70vw] | flex-wrap | flex | justify-evenly | gap-16 | mt-[60px] | sm:mt-[100px]">
+        {% for id, chatroom, chatroom_length in chatrooms %}
+            <div class="bg-white | grid items-center | justify-items-center | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[400px] | boxShadowHover">
                 <h4 class="font-lilita | text-[40px] | mt-[20px]">{{ chatroom }}</h4>
                 <div class="w-[100%] | flex | content-center | py-[20px]">
                     <p class="font-lilita | text-[20px] | w-[100%] | mb-[20px]">Members: {{ chatroom_length }}</p>
-                    <a class="bg-green-600 | rounded-xl | font-lilita | text-[30px] | px-[20px] | py-[5px]" href="">Enter</a>
+                    <a class="bg-green-600 | rounded-xl | font-lilita | text-[30px] | px-[20px] | py-[5px]" href="/chatroom/{{id}}">Enter</a>
                 </div>
             </div>
         {% endfor %}
