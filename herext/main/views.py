@@ -57,9 +57,21 @@ def register_page(request):
 def chatrooms_page(request):
     user_chatrooms = ChatRoom.objects.all()
     user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
+    user_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
+    print(user_chatrooms_id)
     chatroom_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
     return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
-                                                   'chatrooms':zip([(index % 3) + 1 for index in range(len(user_chatrooms))], user_chatrooms, chatroom_lengths),})
+                                                   'chatrooms':zip(user_chatrooms_id, user_chatrooms, chatroom_lengths),})
+
+
+@login_required
+def chatroom_page(request, id):
+    user_chatrooms = ChatRoom.objects.all()
+    user_chatrooms = [chatroom.id for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
+    if id in user_chatrooms:
+        return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated})
+    else:
+        return redirect('chatrooms')
 
 
 @login_required
