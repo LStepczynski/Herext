@@ -24,3 +24,9 @@ class ChatroomForm(forms.ModelForm):
         model = ChatRoom
         fields = ['name', 'username1', 'username2', 'username3', 'username4', 'username5', 
                   'username6', 'username7', 'username8', 'username9', 'username10']
+        
+
+class TextForm(forms.ModelForm):
+    class Meta:
+        model = Text
+        fields = ['content']

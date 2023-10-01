@@ -1,12 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.core.serializers import serialize
 from .models import *
 from django.shortcuts import redirect
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
-import json
 from datetime import date
+import json
 
 # Create your views here.
 
@@ -66,11 +68,37 @@ def chatrooms_page(request):
 
 
 @login_required
+def chatroom_messages(request, id):
+    try:
+        chatroom = ChatRoom.objects.get(id=id)
+    except ChatRoom.DoesNotExist:
+        return HttpResponseBadRequest(content='{"error": "Chatroom does not exist"}', content_type='application/json')
+    # Assuming members is a dictionary where keys are usernames
+    
+    if request.user.username not in chatroom.members.values():
+        return HttpResponseBadRequest(content='{"error": "User not a member of the chatroom"}', content_type='application/json')
+    
+    chatroom_texts = Text.objects.filter(chat_room=chatroom)
+    data = serialize('json', chatroom_texts)
+    return JsonResponse(data, safe=False)
+
+
+@login_required
 def chatroom_page(request, id):
     user_chatrooms = ChatRoom.objects.all()
     user_chatrooms = [chatroom.id for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
     if id in user_chatrooms:
-        return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated})
+        if request.method == 'POST':
+            form = TextForm(request.POST)
+            if form.is_valid():
+                content = form.cleaned_data.get('content')
+                text = Text.objects.create(content=content, 
+                                    author=request.user.username,
+                                    creation_date=date.today(),
+                                    chat_room=ChatRoom.objects.get(id=id))
+                text.save()
+        chatroom_texts = Text.objects.filter(chat_room=ChatRoom.objects.get(id=id))
+        return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated, 'texts':chatroom_texts, "user":request.user.username})
     else:
         return redirect('chatrooms')
     
@@ -89,6 +117,7 @@ def create_chatroom_page(request):
             chatroom.save()
             return redirect('chatrooms')
         return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
+        
     else:
         return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
 
