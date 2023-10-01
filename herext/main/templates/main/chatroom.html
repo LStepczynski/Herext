@@ -40,5 +40,33 @@
     </form>
 </div>
 
-<script src="../../static/js/chatroom.js"></script>
+<script>
+    let lastData = "";
+
+    function longPoll() {
+        fetch('/chatroom-messages/{{id}}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const currentData = JSON.stringify(data);
+                if (currentData !== lastData && currentData !== "[]") {
+                    lastData = currentData;
+                    location.reload(true);
+                }
+                longPoll(); // Call longPoll again to wait for the next update.
+            })
+            .catch(error => {
+                console.error('There was an error during the fetch operation!', error);
+                setTimeout(longPoll, 1000); // Retry after 1 second in case of an error.
+            });
+    }
+
+
+    // Start long polling
+    longPoll();
+</script>
 {% endblock %}

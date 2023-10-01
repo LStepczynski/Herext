@@ -5,7 +5,7 @@ class ChatRoom(models.Model):
     name = models.CharField(max_length=100)
     members = models.JSONField()
     owner = models.CharField(max_length=100)
-    creation_date = models.DateField()
+    creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.name
@@ -13,7 +13,7 @@ class ChatRoom(models.Model):
 class Text(models.Model):
     content = models.CharField(max_length=250)
     author = models.CharField(max_length=100)
-    creation_date = models.DateField()
+    creation_date = models.DateTimeField(auto_now_add=True)
     chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
 
     def __str__(self) -> str:

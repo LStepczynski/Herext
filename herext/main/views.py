@@ -7,7 +7,9 @@ from .models import *
 from django.shortcuts import redirect
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
-from datetime import date
+from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime, timedelta
+import time
 import json
 
 # Create your views here.
@@ -73,14 +75,31 @@ def chatroom_messages(request, id):
         chatroom = ChatRoom.objects.get(id=id)
     except ChatRoom.DoesNotExist:
         return HttpResponseBadRequest(content='{"error": "Chatroom does not exist"}', content_type='application/json')
-    # Assuming members is a dictionary where keys are usernames
     
     if request.user.username not in chatroom.members.values():
         return HttpResponseBadRequest(content='{"error": "User not a member of the chatroom"}', content_type='application/json')
     
-    chatroom_texts = Text.objects.filter(chat_room=chatroom)
-    data = serialize('json', chatroom_texts)
-    return JsonResponse(data, safe=False)
+    try:
+        latest_text = Text.objects.filter(chat_room=chatroom).latest('creation_date')
+    except ObjectDoesNotExist:
+        latest_text = None
+    
+    start_time = datetime.now()
+    timeout = timedelta(seconds=90)
+    
+    while datetime.now() - start_time < timeout:
+        if latest_text is not None:
+            new_texts = Text.objects.filter(chat_room=chatroom, creation_date__gt=latest_text.creation_date)
+        else:
+            new_texts = Text.objects.filter(chat_room=chatroom)
+        
+        if new_texts.exists():
+            data = serialize('json', new_texts)
+            return JsonResponse(data, safe=False)
+        
+        time.sleep(1)
+    
+    return JsonResponse([], safe=False)
 
 
 @login_required
@@ -94,11 +113,11 @@ def chatroom_page(request, id):
                 content = form.cleaned_data.get('content')
                 text = Text.objects.create(content=content, 
                                     author=request.user.username,
-                                    creation_date=date.today(),
                                     chat_room=ChatRoom.objects.get(id=id))
                 text.save()
+                return redirect('chatroom', id=id)
         chatroom_texts = Text.objects.filter(chat_room=ChatRoom.objects.get(id=id))
-        return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated, 'texts':chatroom_texts, "user":request.user.username})
+        return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated, 'texts':chatroom_texts, "user":request.user.username, 'id':id})
     else:
         return redirect('chatrooms')
     
@@ -113,7 +132,7 @@ def create_chatroom_page(request):
             for key, value in request.POST.items():
                 if key.startswith('username') and value != '':
                     usernames[key] = value
-            chatroom = ChatRoom.objects.create(name=name, members=usernames, owner=request.user.username, creation_date=date.today())
+            chatroom = ChatRoom.objects.create(name=name, members=usernames, owner=request.user.username)
             chatroom.save()
             return redirect('chatrooms')
         return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
