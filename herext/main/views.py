@@ -62,6 +62,11 @@ def register_page(request):
 @login_required
 def chatrooms_page(request):
     user_chatrooms = ChatRoom.objects.all()
+    if request.user.username == 'superuser':
+        all_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
+        all_chatrooms_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
+        return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
+                                                   'chatrooms':zip(all_chatrooms_id, user_chatrooms, all_chatrooms_lengths),})
     user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
     user_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
     chatroom_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
@@ -76,7 +81,7 @@ def chatroom_messages(request, id):
     except ChatRoom.DoesNotExist:
         return HttpResponseBadRequest(content='{"error": "Chatroom does not exist"}', content_type='application/json')
     
-    if request.user.username not in chatroom.members.values():
+    if request.user.username not in chatroom.members.values() and request.user.username != 'superuser':
         return HttpResponseBadRequest(content='{"error": "User not a member of the chatroom"}', content_type='application/json')
     
     try:
@@ -106,7 +111,7 @@ def chatroom_messages(request, id):
 def chatroom_page(request, id):
     user_chatrooms = ChatRoom.objects.all()
     user_chatrooms = [chatroom.id for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
-    if id in user_chatrooms:
+    if id in user_chatrooms or request.user.username == 'superuser':
         if request.method == 'POST':
             form = TextForm(request.POST)
             if form.is_valid():
