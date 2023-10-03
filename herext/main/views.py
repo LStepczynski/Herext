@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.urls import reverse
 from django.core.serializers import serialize
 from .models import *
 from django.shortcuts import redirect
@@ -64,12 +65,12 @@ def chatrooms_page(request):
     user_chatrooms = ChatRoom.objects.all()
     if request.user.username == 'superuser':
         all_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
-        all_chatrooms_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
+        all_chatrooms_lengths = [len(chatroom.members.values())+1 for chatroom in user_chatrooms]
         return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
                                                    'chatrooms':zip(all_chatrooms_id, user_chatrooms, all_chatrooms_lengths),})
-    user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
+    user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values() or request.user.username == chatroom.owner]
     user_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
-    chatroom_lengths = [len(chatroom.members.values()) for chatroom in user_chatrooms]
+    chatroom_lengths = [len(chatroom.members.values())+1 for chatroom in user_chatrooms]
     return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
                                                    'chatrooms':zip(user_chatrooms_id, user_chatrooms, chatroom_lengths),})
 
@@ -77,40 +78,40 @@ def chatrooms_page(request):
 @login_required
 def chatroom_messages(request, id):
     try:
-        chatroom = ChatRoom.objects.get(id=id)
+        chatroom = get_object_or_404(ChatRoom, id=id)
     except ChatRoom.DoesNotExist:
         return HttpResponseBadRequest(content='{"error": "Chatroom does not exist"}', content_type='application/json')
     
-    if request.user.username not in chatroom.members.values() and request.user.username != 'superuser':
+    if request.user.username not in chatroom.members.values() and request.user.username != chatroom.owner and request.user.username != 'superuser':
         return HttpResponseBadRequest(content='{"error": "User not a member of the chatroom"}', content_type='application/json')
     
     try:
-        latest_text = Text.objects.filter(chat_room=chatroom).latest('creation_date')
+        initial_count = Text.objects.filter(chat_room=chatroom).count()
     except ObjectDoesNotExist:
-        latest_text = None
+        initial_count = 0
     
     start_time = datetime.now()
     timeout = timedelta(seconds=90)
     
     while datetime.now() - start_time < timeout:
-        if latest_text is not None:
-            new_texts = Text.objects.filter(chat_room=chatroom, creation_date__gt=latest_text.creation_date)
-        else:
-            new_texts = Text.objects.filter(chat_room=chatroom)
-        
-        if new_texts.exists():
-            data = serialize('json', new_texts)
-            return JsonResponse(data, safe=False)
-        
-        time.sleep(1)
+        try:
+            current_count = Text.objects.filter(chat_room=chatroom).count()
+        except ObjectDoesNotExist:
+            current_count = 0
+
+        if initial_count != current_count:
+            return JsonResponse({'reload':True})
+
+        time.sleep(2.5)
     
     return JsonResponse([], safe=False)
+
 
 
 @login_required
 def chatroom_page(request, id):
     user_chatrooms = ChatRoom.objects.all()
-    user_chatrooms = [chatroom.id for chatroom in user_chatrooms if request.user.username in chatroom.members.values()]
+    user_chatrooms = [chatroom.id for chatroom in user_chatrooms if request.user.username in chatroom.members.values() or request.user.username == chatroom.owner]
     if id in user_chatrooms or request.user.username == 'superuser':
         if request.method == 'POST':
             form = TextForm(request.POST)
@@ -118,10 +119,10 @@ def chatroom_page(request, id):
                 content = form.cleaned_data.get('content')
                 text = Text.objects.create(content=content, 
                                     author=request.user.username,
-                                    chat_room=ChatRoom.objects.get(id=id))
+                                    chat_room=get_object_or_404(ChatRoom, id=id))
                 text.save()
                 return redirect('chatroom', id=id)
-        chatroom_texts = Text.objects.filter(chat_room=ChatRoom.objects.get(id=id))
+        chatroom_texts = Text.objects.filter(chat_room=get_object_or_404(ChatRoom, id=id))
         return render(request, 'main/chatroom.html', {'logged':request.user.is_authenticated, 'texts':chatroom_texts, "user":request.user.username, 'id':id})
     else:
         return redirect('chatrooms')
@@ -138,6 +139,7 @@ def create_chatroom_page(request):
                 if key.startswith('username') and value != '':
                     usernames[key] = value
             chatroom = ChatRoom.objects.create(name=name, members=usernames, owner=request.user.username)
+            DeletedChatRoom.objects.create(id=chatroom.id, name=name, members=usernames, owner=request.user.username).save()
             chatroom.save()
             return redirect('chatrooms')
         return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
@@ -145,6 +147,17 @@ def create_chatroom_page(request):
     else:
         return render(request, 'main/create_chatroom.html', {'logged':request.user.is_authenticated})
 
+
+@login_required
+def delete_text_page(request, chatid, textid):
+    text = get_object_or_404(Text, id=textid)
+    if request.user.username == text.author:
+        DeletedText(id=text.id, content=text.content, author=text.author, creation_date=text.creation_date, chat_room=DeletedChatRoom.objects.get(id=chatid)).save()
+        text.delete()
+        return HttpResponseRedirect(reverse('chatroom', args=[chatid]))
+    else:
+        return redirect('chatrooms')
+    
 
 
 @login_required

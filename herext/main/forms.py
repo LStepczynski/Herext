@@ -9,7 +9,7 @@ class AccountForm(forms.ModelForm):
 
 
 class ChatroomForm(forms.ModelForm):
-    username1 = forms.CharField(label='Username 1', max_length=150, required=True)
+    username1 = forms.CharField(label='Username 1', max_length=150, required=False)
     username2 = forms.CharField(label='Username 2', max_length=150, required=False)
     username3 = forms.CharField(label='Username 3', max_length=150, required=False)
     username4 = forms.CharField(label='Username 4', max_length=150, required=False)
