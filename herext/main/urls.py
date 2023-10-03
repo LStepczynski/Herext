@@ -9,8 +9,9 @@ urlpatterns = [
     path("logout", views.logout_page, name="logout"),
     path("chatrooms", views.chatrooms_page, name="chatrooms"),
     path("chatroom/<int:id>", views.chatroom_page, name="chatroom"),
-    path("create-chatroom", views.create_chatroom_page, name="create_chatroom"),
-    path("chatroom-messages/<int:id>", views.chatroom_messages, name="chatroom_messages"),
+    path("chatroom/create", views.create_chatroom_page, name="create_chatroom"),
+    path("chatroom/messages/<int:id>", views.chatroom_messages, name="chatroom_messages"),
+    path("chatroom/delete/<int:chatid>/<int:textid>", views.delete_text_page, name="delete_text"),
     
 ]
 
