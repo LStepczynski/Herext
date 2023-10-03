@@ -67,12 +67,14 @@ def chatrooms_page(request):
         all_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
         all_chatrooms_lengths = [len(chatroom.members.values())+1 for chatroom in user_chatrooms]
         return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
-                                                   'chatrooms':zip(all_chatrooms_id, user_chatrooms, all_chatrooms_lengths),})
+                                                   'chatrooms':zip(all_chatrooms_id, user_chatrooms, all_chatrooms_lengths),
+                                                   "user":request.user.username})
     user_chatrooms = [chatroom for chatroom in user_chatrooms if request.user.username in chatroom.members.values() or request.user.username == chatroom.owner]
     user_chatrooms_id = [chatroom.id for chatroom in user_chatrooms]
     chatroom_lengths = [len(chatroom.members.values())+1 for chatroom in user_chatrooms]
     return render(request, 'main/chatrooms.html', {'logged':request.user.is_authenticated, 
-                                                   'chatrooms':zip(user_chatrooms_id, user_chatrooms, chatroom_lengths),})
+                                                   'chatrooms':zip(user_chatrooms_id, user_chatrooms, chatroom_lengths),
+                                                   "user":request.user.username})
 
 
 @login_required
@@ -157,6 +159,14 @@ def delete_text_page(request, chatid, textid):
         return HttpResponseRedirect(reverse('chatroom', args=[chatid]))
     else:
         return redirect('chatrooms')
+
+def delete_chatroom_page(request, chatid):
+    chatroom = get_object_or_404(ChatRoom, id=chatid)
+    if request.user.username == chatroom.owner or request.user.username == 'superuser':
+        for text in Text.objects.filter(chat_room=chatroom):
+            DeletedText(id=text.id, content=text.content, author=text.author, creation_date=text.creation_date, chat_room=DeletedChatRoom.objects.get(id=chatid)).save()
+        chatroom.delete()
+    return redirect('chatrooms')
     
 
 
