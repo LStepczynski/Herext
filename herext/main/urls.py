@@ -11,7 +11,8 @@ urlpatterns = [
     path("chatroom/<int:id>", views.chatroom_page, name="chatroom"),
     path("chatroom/create", views.create_chatroom_page, name="create_chatroom"),
     path("chatroom/messages/<int:id>", views.chatroom_messages, name="chatroom_messages"),
-    path("chatroom/delete/<int:chatid>/<int:textid>", views.delete_text_page, name="delete_text"),
+    path("chatroom/delete/text/<int:chatid>/<int:textid>", views.delete_text_page, name="delete_text"),
+    path("chatroom/delete/<int:chatid>", views.delete_chatroom_page, name="delete_chatroom"),
     
 ]
 
