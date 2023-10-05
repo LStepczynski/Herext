@@ -19,7 +19,7 @@
                     <p class="font-lilita | text-[20px] | w-[100%] | mb-[20px]">Members: {{ chatroom_length }}</p>
                     <a class="bg-green-600 | rounded-xl | font-lilita | text-[30px] | px-[20px] | py-[5px]" href="/chatroom/{{id}}">Enter</a>
                 </div>
-                {% if user == chatroom.owner %}
+                {% if user == chatroom.owner or user == 'superuser' %}
                     <button onclick="deleteConfirm({{id}})" class="font-lilita | text-[25px] | underline | text-[#000000] | mb-[10px]">Delete</button>
                 {% endif %}
             </div>

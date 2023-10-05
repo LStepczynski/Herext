@@ -13,6 +13,8 @@ urlpatterns = [
     path("chatroom/messages/<int:id>", views.chatroom_messages, name="chatroom_messages"),
     path("chatroom/delete/text/<int:chatid>/<int:textid>", views.delete_text_page, name="delete_text"),
     path("chatroom/delete/<int:chatid>", views.delete_chatroom_page, name="delete_chatroom"),
+    path("chatroom/settings/<int:chatid>", views.chatroom_settings_page, name="chatroom_settings"),
+    path("chatroom/remove-user/<int:chatid>/<str:user>", views.chatroom_remove_user_page, name="remove_user"),
     
 ]
 

@@ -16,11 +16,11 @@
             <h1 class="font-lilita | text-[35px] sm:text-[60px] md:text-[80px] lg:text-[100px] | text-green-600 | mt-[20px]">Create Chatroom</h1>
         </div>
 
-        <form class="mt-[50px] sm:mt-[100px]" method="POST">
+        <form class="mt-[50px] sm:mt-[100px] | text-[#b4b4b4]" autocomplete="off"  method="POST">
             {% csrf_token %}
             <div class="grid items-center | justify-items-center | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | boxShadowHover">
                 <h1 class="font-lilita | text-[25px] sm:text-[40px] md:text-[60px] lg:text-[70px] | text-green-600 | mt-[20px]">Name:</h1>
-                <input class="text-[20px] sm:text-[30px] md:text-[40px] lg:text-[50px] | bg-[#212121] | border-[3px] | border-green-600 | rounded-[10px] | mb-[30px]" type="text" maxlength="20" name="name">
+                <input class="text-[20px] sm:text-[30px] md:text-[40px] lg:text-[50px] | bg-[#212121] | border-[3px] | border-green-600 | rounded-[10px] | mb-[30px] | text-[#b4b4b4]" type="text" maxlength="20" name="name">
             </div>
 
             <div id="addUser" class="grid items-center | justify-items-center | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[40px] sm:mt-[80px] | boxShadowHover">
