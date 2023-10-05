@@ -10,6 +10,10 @@
 
 
 {% block body %}
+    <div class="fixed | top-[100px] | left-[30px]">
+        <a  class="font-lilita | text-[30px] | text-[#9e9e9e] | underline" href="/chatroom/settings/{{id}}">Settings</a>
+    </div>
+
     <div class="grid | justify-center">
         <div class="w-[90vw] sm:w-[80vw] lg:w-[70vw] | mt-[60px] | sm:mt-[100px] | mb-[250px]">
             {% for text in texts %}
@@ -26,6 +30,9 @@
                         <div class="grid | border-[10px] | border-green-600 | rounded-[25px] | bg-[#3d3d3d] | px-[15px] sm:px-[20px] lg:px-[40px] | justify-start | w-[600px]">
                             <h4 class="font-lilita | text-[30px]">{{text.content}}</h4>
                             <p class="font-lilita | text-[30px] | mt-[10px] | text-[#9e9e9e]">{{text.author}}</p>
+                            {% if user == 'superuser' %}
+                                <a class="font-lilita | text-[20px] | underline | text-[#d1d1d1] | mb-[5px]" href="delete/text/{{id}}/{{text.id}}">delete</a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
@@ -36,7 +43,7 @@
 <div class="w-[100vw] | bg-[#3d3d3d] | h-[100px] | fixed | bottom-[0px] | z-50 | grid | justify-center">
     <form class="w-[90vw] | grid | justify-center | grid-cols-[90%,10%]" method="POST">
         {% csrf_token %}
-        <input class="w-[100%] | h-[50px] | text-[25px] | mt-[25px] | col-start-1" name="content" maxlength="250" type="text">
+        <input class="w-[100%] | h-[50px] | text-[25px] | mt-[25px] | col-start-1" name="content" autocomplete="off" maxlength="250" type="text">
         
         <div class="h-[50px] | mt-[25px] | bg-green-600 | grid | justify-center">
             <button class="col-start-2 | text-[30px] | font-lilita | w-[100px]" type="submit">Send</button>

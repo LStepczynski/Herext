@@ -30,3 +30,9 @@ class TextForm(forms.ModelForm):
     class Meta:
         model = Text
         fields = ['content']
+
+class AddUserForm(forms.ModelForm):
+    username = forms.CharField(label='Username 1', max_length=150, required=True)
+    class Meta:
+        model = ChatRoom
+        fields = ['username']

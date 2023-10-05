@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %} Settings | Herext{% endblock %}
+
+
+{% block head %}
+
+{% endblock %}
+
+
+{% block body %}
+<div class="grid | justify-center">
+    <div class="w-[90vw] sm:w-[80vw] lg:w-[70vw] | grid | justify-center | mt-[60px] | sm:mt-[100px]">
+        <div class="w-[100%] | grid | justify-center">
+            <h1 class="font-lilita | text-[45px] sm:text-[70px] md:text-[90px] lg:text-[120px] | text-green-600 | mt-[20px]">{{chat}}</h1>
+        </div>
+
+        
+        <div class="grid | justify-center">
+            <h4 class="font-lilita | text-[35px] sm:text-[60px] md:text-[80px] lg:text-[100px] | text-green-600 | mt-[100px]">Members:</h4>
+
+            <div class="grid-cols-[70%,30%] | grid | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[25px] | py-[10px] | boxShadowHover">
+                <h4 class="font-lilita | text-[40px] | text-[#616161] | col-start-1">{{owner}}</h4>
+            </div>
+
+            {% for member in members %} 
+                <div class="grid-cols-[90%,10%] | grid | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[25px] | py-[10px] | boxShadowHover">
+                    <h4 class="font-lilita | text-[40px] | text-[#616161]">{{member}}</h4>
+
+                    {% if owner == user or 'superuser' == user %}
+                    <a href="/chatroom/remove-user/{{id}}/{{member}}">
+                        <img src="../../static/assets/OIP.png" class="h-[60px]" alt="Remove">
+                    </a>
+                    {% endif %}
+                </div>
+            {% endfor %} 
+
+            {% if user == owner or user == 'superuser' %}
+            <form class="mt-[50px] sm:mt-[100px] | text-[#b4b4b4]" autocomplete="off"  method="POST">
+                {% csrf_token %}
+                <div id="addUser" class="grid items-center | justify-items-center | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[40px] sm:mt-[80px] | boxShadowHover">
+                    <h1 class="font-lilita | text-[25px] sm:text-[40px] md:text-[60px] lg:text-[70px] | text-green-600 | mt-[20px]">Add User:</h1>
+                    <input class="text-[20px] sm:text-[30px] md:text-[40px] lg:text-[50px] | bg-[#212121] | border-[3px] | border-green-600 | rounded-[10px] | mb-[30px] | px-[5px]" placeholder="Add Username" type="text" name="username" maxlength="150">
+                </div>
+                <div class="w-[100%] | grid | justify-center | mt-[50px]">
+                    <button class="font-lilita | text-[50px] | text-green-600 | border-[5px] | border-green-600 | rounded-[25px] | px-[20px] | boxShadowHover" type="submit">submit</button>
+                </div>
+                {% endif %}
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

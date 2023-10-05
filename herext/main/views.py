@@ -153,7 +153,7 @@ def create_chatroom_page(request):
 @login_required
 def delete_text_page(request, chatid, textid):
     text = get_object_or_404(Text, id=textid)
-    if request.user.username == text.author:
+    if request.user.username == text.author or request.user.username == 'superuser':
         DeletedText(id=text.id, content=text.content, author=text.author, creation_date=text.creation_date, chat_room=DeletedChatRoom.objects.get(id=chatid)).save()
         text.delete()
         return HttpResponseRedirect(reverse('chatroom', args=[chatid]))
@@ -168,7 +168,48 @@ def delete_chatroom_page(request, chatid):
         chatroom.delete()
     return redirect('chatrooms')
     
+def chatroom_settings_page(request, chatid):
+    chatroom = get_object_or_404(ChatRoom, id=chatid)
 
+    if request.method == 'POST':
+        form = AddUserForm(request.POST)
+        if form.is_valid() and (request.user.username == 'superuser' or request.user.username == chatroom.owner):
+            members = [value for key, value in chatroom.members.items()]
+            members.append(form.cleaned_data.get('username'))
+            new_members = {}
+            for index, member in enumerate(members):
+                new_members[f"username{index+1}"] = member
+            chatroom.members = new_members
+            chatroom.save()
+            return render(request, 'main/chatroom_settings.html', {'chat':chatroom.name, 
+                                                                "members":chatroom.members.values(),
+                                                                'owner':chatroom.owner, 
+                                                                'user':request.user.username,
+                                                                'id':chatroom.id,
+                                                                'logged':request.user.is_authenticated}) 
+
+    elif request.user.username in chatroom.members.values() or request.user.username == 'superuser' or request.user.username == chatroom.owner:
+        form = AddUserForm()
+        print(chatroom.members.values())
+        return render(request, 'main/chatroom_settings.html', {'chat':chatroom.name, 
+                                                                "members":chatroom.members.values(),
+                                                                'owner':chatroom.owner, 
+                                                                'user':request.user.username,
+                                                                'id':chatroom.id,
+                                                                'logged':request.user.is_authenticated}) 
+    return redirect("chatrooms")
+
+def chatroom_remove_user_page(request, chatid, user):
+    chatroom = get_object_or_404(ChatRoom, id=chatid)
+    if request.user.username == 'superuser' or request.user.username == chatroom.owner:
+        members = [value for key, value in chatroom.members.items() if value != user]
+        new_members = {}
+        for index, member in enumerate(members):
+            new_members[f"username{index+1}"] = member
+        chatroom.members = new_members
+        chatroom.save()
+        return HttpResponseRedirect(reverse('chatroom_settings', args=[chatid]))
+    return redirect('chatrooms')
 
 @login_required
 def logout_page(request):
