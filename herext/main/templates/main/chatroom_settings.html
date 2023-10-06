@@ -13,7 +13,7 @@
 <div class="grid | justify-center">
     <div class="w-[90vw] sm:w-[80vw] lg:w-[70vw] | grid | justify-center | mt-[60px] | sm:mt-[100px]">
         <div class="w-[100%] | grid | justify-center">
-            <h1 class="font-lilita | text-[45px] sm:text-[70px] md:text-[90px] lg:text-[120px] | text-green-600 | mt-[20px]">{{chat}}</h1>
+            <h1 class="font-lilita | text-[40px] sm:text-[70px] md:text-[90px] lg:text-[120px] | text-green-600 | mt-[20px]">{{chat}}</h1>
         </div>
 
         
@@ -21,16 +21,16 @@
             <h4 class="font-lilita | text-[35px] sm:text-[60px] md:text-[80px] lg:text-[100px] | text-green-600 | mt-[100px]">Members:</h4>
 
             <div class="grid-cols-[70%,30%] | grid | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[25px] | py-[10px] | boxShadowHover">
-                <h4 class="font-lilita | text-[40px] | text-[#616161] | col-start-1">{{owner}}</h4>
+                <h4 class="font-lilita | text-[25px] sm:text-[40px] | text-[#616161] | col-start-1">{{owner}}</h4>
             </div>
 
             {% for member in members %} 
-                <div class="grid-cols-[90%,10%] | grid | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[25px] | py-[10px] | boxShadowHover">
-                    <h4 class="font-lilita | text-[40px] | text-[#616161]">{{member}}</h4>
+                <div class="grid-cols-[80%,20%] sm:grid-cols-[90%,10%] | grid | border-[10px] | border-green-600 | rounded-[25px] | px-[25px] sm:px-[50px] lg:px-[70px] | w-[100%] | mt-[25px] | py-[10px] | boxShadowHover">
+                    <h4 class="font-lilita | text-[25px] sm:text-[40px] | text-[#616161]">{{member}}</h4>
 
                     {% if owner == user or 'superuser' == user %}
                     <a href="/chatroom/remove-user/{{id}}/{{member}}">
-                        <img src="../../static/assets/OIP.png" class="h-[60px]" alt="Remove">
+                        <img src="../../static/assets/OIP.png" class="h-[40px] sm:h-[60px]" alt="Remove">
                     </a>
                     {% endif %}
                 </div>
@@ -47,8 +47,9 @@
                     <button class="font-lilita | text-[50px] | text-green-600 | border-[5px] | border-green-600 | rounded-[25px] | px-[20px] | boxShadowHover" type="submit">submit</button>
                 </div>
                 {% endif %}
-
             </form>
+
+            <div class="mb-[150px] sm:mb-[300px]"></div>
         </div>
 
     </div>
