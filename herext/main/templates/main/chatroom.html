@@ -10,7 +10,7 @@
 
 
 {% block body %}
-    <div class="fixed | top-[100px] | left-[30px]">
+    <div class="ml-[30px] | sm:ml-[50px] | lg:ml-[80px] | mt-[30px]">
         <a  class="font-lilita | text-[30px] | text-[#9e9e9e] | underline" href="/chatroom/settings/{{id}}">Settings</a>
     </div>
 
@@ -19,20 +19,24 @@
             {% for text in texts %}
                 {% if user == text.author %}
                     <div class="mt-[20px]">
-                        <div class="grid | border-[10px] | border-green-600 | rounded-[25px] | bg-[#3d3d3d] | px-[15px] sm:px-[20px] lg:px-[40px] | justify-start | max-w-[600px]">
-                            <h4 class="font-lilita | text-[30px]">{{text.content}}</h4>
-                            <p class="font-lilita | text-[30px] | mt-[10px] | text-[#9e9e9e]">You</p>
-                            <a class="font-lilita | text-[20px] | underline | text-[#d1d1d1] | mb-[5px]" href="delete/text/{{id}}/{{text.id}}">delete</a>
+                        <div class="grid | border-[10px] | relative | border-green-600 | rounded-[25px] | bg-[#3d3d3d] | px-[15px] sm:px-[20px] lg:px-[40px] | justify-start | max-w-[100%] lg:max-w-[700px]">
+                            <h4 class="text-[30px] | mt-[10px] | text-[#9e9e9e] | font-lilita | mb-[10px]">You:</h4>
+                            <a class="font-lilita | text-[20px] | underline | text-[#d1d1d1] | mb-[5px] | absolute | right-[10px] | top-[10px]" href="delete/text/{{id}}/{{text.id}}">
+                                <img src="../../static/assets/OIP.png" class="h-[40px] sm:h-[40px]" alt="Remove">
+                            </a>
+                            <h4 class="font-lilita | text-[20px] | mb-[10px]">{{text.content}}</h4>
                         </div>
                     </div>
                 {% else %}
                     <div class="flex | justify-end | mt-[20px]">
-                        <div class="grid | border-[10px] | border-green-600 | rounded-[25px] | bg-[#3d3d3d] | px-[15px] sm:px-[20px] lg:px-[40px] | justify-start | w-[600px]">
-                            <h4 class="font-lilita | text-[30px]">{{text.content}}</h4>
-                            <p class="font-lilita | text-[30px] | mt-[10px] | text-[#9e9e9e]">{{text.author}}</p>
+                        <div class="grid | relative | border-[10px] | border-green-600 | rounded-[25px] | bg-[#3d3d3d] | px-[15px] sm:px-[20px] lg:px-[40px] | justify-start | w-[100%] lg:w-[700px]">
+                            <h4 class="text-[30px] | mt-[10px] | text-[#9e9e9e] | font-lilita | mb-[10px]">{{text.author}}:</h4>
                             {% if user == 'superuser' %}
-                                <a class="font-lilita | text-[20px] | underline | text-[#d1d1d1] | mb-[5px]" href="delete/text/{{id}}/{{text.id}}">delete</a>
+                                <a class="font-lilita | text-[20px] | underline | text-[#d1d1d1] | mb-[5px] | absolute | right-[10px] | top-[10px]" href="delete/text/{{id}}/{{text.id}}">
+                                    <img src="../../static/assets/OIP.png" class="h-[40px] sm:h-[40px]" alt="Remove">
+                                </a>
                             {% endif %}
+                            <h4 class="font-lilita | text-[20px] | mb-[10px]">{{text.content}}</h4>
                         </div>
                     </div>
                 {% endif %}
@@ -41,12 +45,12 @@
     </div>
 
 <div class="w-[100vw] | bg-[#3d3d3d] | h-[100px] | fixed | bottom-[0px] | z-50 | grid | justify-center">
-    <form class="w-[90vw] | grid | justify-center | grid-cols-[90%,10%]" method="POST">
+    <form class="w-[90vw] | grid | justify-center | grid-cols-[75%,25%] sm:grid-cols-[85%,15%] xl:grid-cols-[90%,10%]" method="POST">
         {% csrf_token %}
         <input class="w-[100%] | h-[50px] | text-[25px] | mt-[25px] | col-start-1" name="content" autocomplete="off" maxlength="250" type="text">
         
         <div class="h-[50px] | mt-[25px] | bg-green-600 | grid | justify-center">
-            <button class="col-start-2 | text-[30px] | font-lilita | w-[100px]" type="submit">Send</button>
+            <button class="col-start-2 | text-[25px] md:text-[30px] | font-lilita | w-[100px]" type="submit">Send</button>
         </div>
     </form>
 </div>
